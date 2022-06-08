@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="BountyHunter">
+    <output-path>$PROJECT_DIR$/out/artifacts/BountyHunter</output-path>
+    <root id="archive" name="BountyHunter.jar">
+      <element id="module-output" name="Bounty" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/resources/plugin.yml" />
+    </root>
+  </artifact>
+</component>

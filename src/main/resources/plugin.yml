@@ -1,0 +1,8 @@
+name: BountyHunter
+main: me.steep.bountyhunter.BountyHunter
+version: 0.0.1
+api-version: 1.18
+commands:
+  bounty:
+    aliases: b
+    description: Main command for the Bounty plugin.
