@@ -1,10 +1,16 @@
 package me.steep.bountyhunter.objects;
 
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.steep.bountyhunter.BountyHunter;
+import me.steep.bountyhunter.Util;
+import me.steep.bountyhunter.handlers.ItemHandler;
 import me.steep.bountyhunter.handlers.Log;
 import me.steep.bountyhunter.handlers.SQLite;
+import net.minecraft.nbt.MojangsonParser;
+import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,27 +18,31 @@ import org.jetbrains.annotations.NotNull;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @SuppressWarnings("all")
 public class Bounty {
 
-    private int id = -1;
     private final UUID creator;
     private final UUID wanted;
-    private Set<ItemStack> rewards = null;
+    private final List<ItemStack> rewards;
 
-    public Bounty(UUID creator, UUID wanted, Set<ItemStack> rewards) {
+    /**
+     * A Bounty that has not yet been created/activated and is not yet store in the database
+     *
+     * @param creator The UUID of the player who put up the Bounty
+     * @param wanted The UUID of the person wanted in this Bounty
+     * @param rewards The rewards of this Bounty
+     */
+    public Bounty(UUID creator, UUID wanted, List<ItemStack> rewards) {
 
         this.creator = creator;
         this.wanted = wanted;
         this.rewards = rewards;
 
     }
-
-    public Bounty(int id, UUID creator, UUID wanted, Set<ItemStack> rewards) {
+    /*
+    public Bounty(int id, UUID creator, UUID wanted, List<ItemStack> rewards) {
 
         this.id = id;
         this.creator = creator;
@@ -48,20 +58,12 @@ public class Bounty {
 
     }
 
-    public Bounty(int id, UUID creator, UUID wanted) {
-
-        this.id = id;
-        this.creator = creator;
-        this.wanted = wanted;
-
-    }
-
     public Bounty(UUID creator, UUID wanted, ItemStack rewards) {
 
         this.creator = creator;
         this.wanted = wanted;
 
-        Set<ItemStack> reward = new HashSet<>();
+        List<ItemStack> reward = new ArrayList<>();
         reward.add(rewards);
 
         this.rewards = reward;
@@ -74,14 +76,15 @@ public class Bounty {
         this.creator = creator;
         this.wanted = wanted;
 
-        Set<ItemStack> reward = new HashSet<>();
+        List<ItemStack> reward = new ArrayList<>();
         reward.add(rewards);
 
         this.rewards = reward;
 
     }
+    */
 
-    public void create() {
+    public Bounty create() {
 
         new BukkitRunnable() {
             @Override
@@ -92,7 +95,40 @@ public class Bounty {
                 try {
 
                     con = SQLite.getConnection();
-                    con.createStatement().executeUpdate("insert into bounty (creator, wanted) values (" + creator.toString() + ", " + wanted.toString() + ", " + format(rewards) + ")");
+                    con.createStatement().executeUpdate("insert into bounty (creator, wanted, rewards) values (" + creator.toString() + ", " + wanted.toString() + ", " + Util.format_ItemListToString(getRewards()) + ")");
+
+                } catch (SQLException e) {
+
+                    Log.failed_Connection_To_SQL_DataBase(e);
+
+                } finally {
+
+                    SQLite.closeConnection(con);
+
+                }
+
+            }
+        }.runTaskAsynchronously(BountyHunter.getInst());
+
+        return this;
+
+    }
+
+
+    /* Replaced by BountyHandler's removeBounty() method
+    public void remove() {
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                Connection con = null;
+
+                try {
+
+                    con = SQLite.getConnection();
+                    con.createStatement().
+                            executeUpdate("delete from bounty where creator='" + creator.toString() + "' and wanted='" + wanted.toString() + "'");
 
                 } catch (SQLException e) {
 
@@ -108,18 +144,11 @@ public class Bounty {
         }.runTaskAsynchronously(BountyHunter.getInst());
 
     }
-
-    public void remove() {
-
-        if(this.id == -1) return;
-
-
-
-    }
+     */
 
     @NotNull
-    public Set<ItemStack> getRewards() {
-        return this.rewards != null ? this.rewards : new HashSet<>();
+    public List<ItemStack> getRewards() {
+        return this.rewards != null ? this.rewards : new ArrayList<ItemStack>();
     }
 
     @NotNull
@@ -128,41 +157,18 @@ public class Bounty {
     }
 
     @NotNull
+    public UUID getCreatorUUID() {
+        return this.creator;
+    }
+
+    @NotNull
     public Player getWanted() {
         return Bukkit.getPlayer(this.wanted);
     }
 
-    private String format(Set<ItemStack> r) {
-
-        StringBuilder formatted = new StringBuilder("");
-
-        r.forEach(item -> formatted.append(item.getType() + "(" + item.getAmount() + ")[" + "nbt goes here" + "],"));
-
-        return formatted.toString();
-
-    }
-
-    private Set<ItemStack> unformat(String formatted) {
-
-        Set<ItemStack> unformatted = new HashSet<>();
-
-        String[] items = formatted.split(",");
-
-        for(int index = 0; index < formatted.split(",").length; index++) {
-
-            String entry = items[index];
-
-            Material material = Material.getMaterial(entry.split("\\[")[0].toUpperCase());
-            int amount = Integer.parseInt(entry.substring(entry.indexOf("("), entry.indexOf("(") + 1));
-
-            ItemStack item = new ItemStack(material, amount);
-
-            unformatted.add(new ItemStack(material, amount));
-
-        }
-
-        return unformatted;
-
+    @NotNull
+    public UUID getWantedUUID() {
+        return this.wanted;
     }
 
 }

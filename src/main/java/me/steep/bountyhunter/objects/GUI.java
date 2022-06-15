@@ -1,6 +1,8 @@
 package me.steep.bountyhunter.objects;
 
 import me.steep.bountyhunter.BountyHunter;
+import me.steep.bountyhunter.Util;
+import me.steep.bountyhunter.handlers.BountyHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,6 +14,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
+import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @SuppressWarnings("all")
@@ -73,6 +77,8 @@ public class GUI {
 
                 closemeta.setDisplayName(color("&cClose"));
 
+                // load bounty's
+
             }
 
             case REWARDSTORAGE -> {
@@ -83,6 +89,7 @@ public class GUI {
                 ItemMeta meta = confirm.getItemMeta();
 
                 meta.setDisplayName(color("&aConfirm"));
+                // We will create the bounty itself after the confirm button has been clicked.
                 meta.getPersistentDataContainer().set(new NamespacedKey(BountyHunter.getInst(), "wanted"), PersistentDataType.STRING, this.wanted.toString());
 
                 confirm.setItemMeta(meta);
@@ -92,7 +99,7 @@ public class GUI {
 
             case REWARDCLAIM -> {
 
-                // load unclaimed rewards
+                // instead just use the claim command to give them as much of the rewards as their inventory fits at that time and keep the rest saved
 
             }
 
@@ -100,6 +107,8 @@ public class GUI {
 
         close.setItemMeta(closemeta);
         this.inv.setItem(31, close);
+
+        p.openInventory(this.inv);
 
     }
 

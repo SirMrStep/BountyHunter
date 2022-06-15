@@ -3,6 +3,7 @@ package me.steep.bountyhunter.handlers;
 import me.steep.bountyhunter.BountyHunter;
 import me.steep.bountyhunter.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,22 +15,30 @@ public class SQLite {
 
     public static void loadDefaultDatabase() {
 
-        Connection con = null;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
 
-        try {
+                Connection con = null;
 
-            Connection conn = DriverManager.getConnection("jdbc:sqlite:" + BountyHunter.getInst().getDataFolder() + "/database.db");
-            con.createStatement().executeUpdate("create table if not exists bounty (creator text, wanted text, rewards text)");
+                try {
 
-        } catch (SQLException e) {
+                    Connection conn = getConnection();
+                    con.createStatement().executeUpdate("create table if not exists bounty (creator text, wanted text, rewards text)");
+                    con.createStatement().executeUpdate("create table if not exists rewards (owner text, rewards text)");
 
-            Log.failed_Connection_To_SQL_DataBase(e);
+                } catch (SQLException e) {
 
-        } finally {
+                    Log.failed_Connection_To_SQL_DataBase(e);
 
-            closeConnection(con);
+                } finally {
 
-        }
+                    closeConnection(con);
+
+                }
+
+            }
+        }.runTaskAsynchronously(BountyHunter.getInst());
 
     }
 

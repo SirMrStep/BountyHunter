@@ -25,6 +25,7 @@ public class BountyHunter extends JavaPlugin {
 
     private void initialize() {
 
+        send("cringe");
         registerEvents();
         registerCommands();
 
