@@ -3,6 +3,8 @@ package me.steep.bountyhunter.handlers;
 import me.steep.bountyhunter.BountyHunter;
 import me.steep.bountyhunter.Util;
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.sql.Connection;
@@ -12,6 +14,13 @@ import java.sql.SQLException;
 
 @SuppressWarnings("all")
 public class SQLite {
+
+    @EventHandler
+    public void onClick( e) {
+
+        if(e.get)
+
+    }
 
     public static void loadDefaultDatabase() {
 

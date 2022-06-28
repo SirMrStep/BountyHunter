@@ -1,6 +1,7 @@
 package me.steep.bountyhunter;
 
 import me.steep.bountyhunter.commands.BountyCommand;
+import me.steep.bountyhunter.handlers.DataHandler;
 import me.steep.bountyhunter.handlers.SQLite;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -25,9 +26,10 @@ public class BountyHunter extends JavaPlugin {
 
     private void initialize() {
 
-        send("cringe");
         registerEvents();
         registerCommands();
+
+        DataHandler.register(this);
 
         SQLite.loadDefaultDatabase();
 

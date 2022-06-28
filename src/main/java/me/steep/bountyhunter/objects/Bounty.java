@@ -1,16 +1,10 @@
 package me.steep.bountyhunter.objects;
 
-import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import me.steep.bountyhunter.BountyHunter;
 import me.steep.bountyhunter.Util;
-import me.steep.bountyhunter.handlers.ItemHandler;
 import me.steep.bountyhunter.handlers.Log;
 import me.steep.bountyhunter.handlers.SQLite;
-import net.minecraft.nbt.MojangsonParser;
-import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;

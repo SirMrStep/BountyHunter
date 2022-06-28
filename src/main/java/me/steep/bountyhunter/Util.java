@@ -1,7 +1,7 @@
 package me.steep.bountyhunter;
 
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import me.steep.bountyhunter.handlers.ItemHandler;
+import me.steep.bountyhunter.handlers.DataHandler;
 import net.minecraft.nbt.MojangsonParser;
 import net.minecraft.nbt.NBTTagCompound;
 import org.bukkit.ChatColor;
@@ -28,7 +28,7 @@ public class Util {
             net.minecraft.world.item.ItemStack i = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = i.t() ? i.u() : new NBTTagCompound();
 
-            formatted.append(item.getType() + "(" + item.getAmount() + ")[" + ItemHandler.getNBT(item).toString() + "],");
+            formatted.append(item.getType() + "(" + item.getAmount() + ")[" + DataHandler.getNBT(item).toString() + "],");
 
         });
 
@@ -60,7 +60,7 @@ public class Util {
 
             ItemStack item = new ItemStack(material, amount);
 
-            ItemHandler.setNBT(item, nbt);
+            DataHandler.setNBT(item, nbt);
             unformatted.add(item);
 
         }
